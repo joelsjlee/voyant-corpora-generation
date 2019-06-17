@@ -4,11 +4,20 @@ volumes:
   caddy: {}
 
 services:
+
+  voyant_gen:
+    build:
+      context: ./compose/voyant_generator
+    volumes:
+      - ${LOCAL_VOL}:${CONTAINER_VOL}
+
   voyant:
     build:
       context: .
       dockerfile: ./compose/voyant/Dockerfile
     image: voyant_app
+    depends_on:
+      - voyant_gen
     working_dir: /var/www/voyant
     command: java -jar VoyantServer.jar --headless=true
 
