@@ -6,4 +6,4 @@ COPY compose/context/ /input/
 
 WORKDIR /bin
 
-CMD voyant_gen_script.sh
+CMD source voyant_gen_script.sh
