@@ -1,9 +1,9 @@
 FROM python:3
 
-COPY compose/voyant_generator/bin /bin
+COPY compose/voyant_generator/bin /run
 
 COPY compose/context/ /input/
 
-WORKDIR /bin
+WORKDIR /run
 
-CMD source voyant_gen_script.sh
+CMD /bin/sh voyant_gen_script.sh
