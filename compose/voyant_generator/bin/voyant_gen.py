@@ -11,7 +11,7 @@ def make_list(keyword_path):
 
 
 def voyant(keywords, text_path, corpora_path):
-    key_path = '/keyword_dirs'
+    key_path = '/keyword_dirs/'
     csv_path = corpora_path
     if (not key_path.endswith('/') or not text_path.endswith('/') or not corpora_path.endswith('/')):
         raise Exception("File path must end with a /")
