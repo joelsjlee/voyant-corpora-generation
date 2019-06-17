@@ -10,9 +10,12 @@ def make_list(keyword_path):
         return [line.strip() for line in f]
 
 
-def voyant(keywords, key_path, text_path, corpora_path, csv_path):
+def voyant(keywords, text_path, corpora_path):
+    key_path = '/keyword_dirs'
+    csv_path = corpora_path
     if (not key_path.endswith('/') or not text_path.endswith('/') or not corpora_path.endswith('/')):
         raise Exception("File path must end with a /")
+
 
     keywords = make_list(keywords)
 
@@ -53,6 +56,8 @@ def voyant(keywords, key_path, text_path, corpora_path, csv_path):
             url = url_template.format(word.replace(' ', '_') + '.zip')
             writer.writerow({'keyword': word, 'url': url})
 
+    shutil.rmtree('keyword_dirs')
+
 
 # Function to check if a word is in a text
 def is_in(text, word):
@@ -61,11 +66,9 @@ def is_in(text, word):
 
 def main():
     keyword = str(sys.argv[1]).strip()
-    key_path = str(sys.argv[2]).strip()
-    text_path = str(sys.argv[3]).strip()
-    corpora_path = str(sys.argv[4]).strip()
-    csv_path = str(sys.argv[5]).strip()
-    voyant(keyword, key_path, text_path, corpora_path, csv_path)
+    text_path = str(sys.argv[2]).strip()
+    corpora_path = str(sys.argv[3]).strip()
+    voyant(keyword, text_path, corpora_path)
     print("Wow, it actually worked!")
 
 

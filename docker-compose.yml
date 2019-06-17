@@ -7,9 +7,9 @@ services:
 
   voyant_gen:
     build:
-      context: ./compose/voyant_generator
+      context: .
     volumes:
-      - ${LOCAL_VOL}:${CONTAINER_VOL}
+      - ./corpora:/corpora
 
   voyant:
     build:
