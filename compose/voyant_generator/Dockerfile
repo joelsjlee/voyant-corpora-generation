@@ -2,7 +2,7 @@ FROM python:3
 
 COPY compose/voyant_generator/bin /run
 
-COPY compose/context/ /input/
+COPY context/ /input/
 
 WORKDIR /run
 
