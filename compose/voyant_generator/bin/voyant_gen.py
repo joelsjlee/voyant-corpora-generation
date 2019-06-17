@@ -57,7 +57,7 @@ def voyant(keywords, text_path, corpora_path):
             url = url_template.format(word.replace(' ', '_') + '.zip')
             writer.writerow({'keyword': word, 'url': url})
 
-    shutil.rmtree('keyword_dirs')
+    shutil.rmtree('/keyword_dirs')
 
 
 # Function to check if a word is in a text
