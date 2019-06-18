@@ -106,7 +106,10 @@ Currently, the `context` folder contains some articles in `corpus` and a mock `k
 
 Your `context` folder should now have two items, `keywords.txt` and a folder called `corpus` with all your .txt files.
 
-4. Setting up the server 
+4. Setting up the server.
+
+    This was first done using PUTTY and a domain name. If you also are using putty and have a domain name, put it in `compose\envs\caddy`.
+
 
 5. Build the docker images. To run this command, you'll need to move into the `voyant-docker` directory:
 
