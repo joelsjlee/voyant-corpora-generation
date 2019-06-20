@@ -2,6 +2,10 @@ import os
 import shutil
 import csv
 import sys
+import zipfile
+from time import sleep
+import signal
+import time
 
 
 # Makes python list from inputted txt list
@@ -11,22 +15,16 @@ def make_list(keyword_path):
 
 
 def voyant(keywords, text_path, corpora_path):
-    key_path = '/keyword_dirs/'
-    os.mkdir(key_path)
+    # if os.path.exists(corpora_path):
+    #     shutil.rmtree(corpora_path)
+    # os.mkdir(corpora_path)
+    print(os.listdir(corpora_path))
+    for f in os.listdir(corpora_path):
+        os.remove(os.path.join(corpora_path, f))
     csv_path = corpora_path
-    if (not key_path.endswith('/') or not text_path.endswith('/') or not corpora_path.endswith('/')):
+    if (not text_path.endswith('/') or not corpora_path.endswith('/')):
         raise Exception("File path must end with a /")
-
-
     keywords = make_list(keywords)
-
-    # Making a directory for all the keywords
-    for word in keywords:
-        if ' ' in word:
-            os.mkdir(key_path + word.replace(' ', '_'))
-        else:
-            os.mkdir(key_path + word)
-
     # Matching keywords to texts and filling the directories
     filenames = os.listdir(text_path)
     for text_file in filenames:
@@ -34,17 +32,9 @@ def voyant(keywords, text_path, corpora_path):
             text = text.read()
             for word in keywords:
                 if is_in(text, word):
-                    if (' ' in word):
-                        shutil.copy(text_path + text_file, key_path + word.replace(' ', '_'))
-                    else:
-                        shutil.copy(text_path + text_file, key_path + word)
-
-    # Zipping files and moving them to corpora
-    for word in keywords:
-        if (' ' in word):
-            shutil.make_archive(corpora_path + word.replace(' ', '_'), 'zip', key_path, word.replace(' ', '_'))
-        else:
-            shutil.make_archive(corpora_path + word, 'zip', key_path, word)
+                    with zipfile.ZipFile(corpora_path + word.replace(' ', '_') + '.zip', 'a') as myzip:
+                        if word.replace(' ', '_') + '/' + text_file not in myzip.namelist():
+                            myzip.write(text_path + text_file, word.replace(' ', '_') + '/' + text_file)
 
     # Making csv of all the voyant urls
     fields = ('keyword', 'url')
@@ -57,8 +47,7 @@ def voyant(keywords, text_path, corpora_path):
             url = url_template.format(word.replace(' ', '_') + '.zip')
             writer.writerow({'keyword': word, 'url': url})
 
-    shutil.rmtree('/keyword_dirs')
-
+    print("Corpus Generation Complete")
 
 # Function to check if a word is in a text
 def is_in(text, word):
@@ -66,12 +55,31 @@ def is_in(text, word):
 
 
 def main():
-    keyword = str(sys.argv[1]).strip()
+    def handler(signum, frame):
+        sys.exit()
+    signal.signal(signal.SIGTERM, handler)
+    keywords = str(sys.argv[1]).strip()
     text_path = str(sys.argv[2]).strip()
     corpora_path = str(sys.argv[3]).strip()
-    voyant(keyword, text_path, corpora_path)
-    print("Wow, it actually worked!")
-
+    timestamp_cache = {}
+    keyword_cache = 0;
+    while True:
+        with os.scandir(text_path) as it:
+            for entry in it:
+                print(type(entry))
+                if entry.name.endswith(".txt"):
+                    entry_stats = entry.stat()
+                    if entry.name in timestamp_cache:
+                        entry_cache_timestamp = timestamp_cache[entry.name]
+                        if (entry_cache_timestamp == entry_stats.st_mtime):
+                            continue
+                    timestamp_cache[entry.name] = entry_stats.st_mtime
+                    voyant(keywords, text_path, corpora_path)
+        keywords_stats = os.stat(keywords)
+        if (keyword_cache != keywords_stats.st_mtime):
+            keyword_cache = keywords_stats.st_mtime
+            voyant(keywords, text_path, corpora_path)
+        time.sleep(90)
 
 if __name__ == '__main__':
     main()
