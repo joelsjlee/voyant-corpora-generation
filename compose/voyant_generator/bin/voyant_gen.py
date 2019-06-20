@@ -18,7 +18,6 @@ def voyant(keywords, text_path, corpora_path):
     # if os.path.exists(corpora_path):
     #     shutil.rmtree(corpora_path)
     # os.mkdir(corpora_path)
-    print(os.listdir(corpora_path))
     for f in os.listdir(corpora_path):
         os.remove(os.path.join(corpora_path, f))
     csv_path = corpora_path
@@ -61,25 +60,19 @@ def main():
     keywords = str(sys.argv[1]).strip()
     text_path = str(sys.argv[2]).strip()
     corpora_path = str(sys.argv[3]).strip()
-    timestamp_cache = {}
-    keyword_cache = 0;
+    temp_time = 0
+    recent_time = 0
     while True:
-        with os.scandir(text_path) as it:
-            for entry in it:
-                print(type(entry))
-                if entry.name.endswith(".txt"):
-                    entry_stats = entry.stat()
-                    if entry.name in timestamp_cache:
-                        entry_cache_timestamp = timestamp_cache[entry.name]
-                        if (entry_cache_timestamp == entry_stats.st_mtime):
-                            continue
-                    timestamp_cache[entry.name] = entry_stats.st_mtime
-                    voyant(keywords, text_path, corpora_path)
-        keywords_stats = os.stat(keywords)
-        if (keyword_cache != keywords_stats.st_mtime):
-            keyword_cache = keywords_stats.st_mtime
+        for text in os.listdir(text_path):
+            if os.path.getmtime(os.path.join(text_path,text)) > recent_time:
+                recent_time = os.path.getmtime(os.path.join(text_path, text))
+        if os.path.getmtime(keywords) > recent_time:
+            recent_time = os.path.getmtime(keywords)
+        if recent_time > temp_time:
+            temp_time = recent_time
             voyant(keywords, text_path, corpora_path)
-        time.sleep(90)
+        print("SLEEPING FOR A BIT")
+        time.sleep(10)
 
 if __name__ == '__main__':
     main()

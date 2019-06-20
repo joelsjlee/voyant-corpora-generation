@@ -17,3 +17,8 @@ child
 Roosevelt
 President
 senator
+beef
+day
+work
+upton
+today
