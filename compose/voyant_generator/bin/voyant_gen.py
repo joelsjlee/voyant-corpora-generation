@@ -72,7 +72,7 @@ def main():
             print("Change detected, generating corpus...")
             voyant(keywords, text_path, corpora_path)
             print("Corpus generation complete.")
-            print("Watching for changes..."
+            print("Watching for changes...")
         time.sleep(10)
 
 if __name__ == '__main__':
