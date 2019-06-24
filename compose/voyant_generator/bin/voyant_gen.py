@@ -6,6 +6,7 @@ import zipfile
 from time import sleep
 import signal
 import time
+import re
 
 
 # Makes python list from inputted txt list
@@ -15,9 +16,6 @@ def make_list(keyword_path):
 
 
 def voyant(keywords, text_path, corpora_path):
-    # if os.path.exists(corpora_path):
-    #     shutil.rmtree(corpora_path)
-    # os.mkdir(corpora_path)
     for f in os.listdir(corpora_path):
         os.remove(os.path.join(corpora_path, f))
     csv_path = corpora_path
@@ -47,11 +45,10 @@ def voyant(keywords, text_path, corpora_path):
             url = url_template.format(word.replace(' ', '_') + '.zip')
             writer.writerow({'keyword': word, 'url': url})
 
-    print("Corpus Generation Complete")
 
 # Function to check if a word is in a text
 def is_in(text, word):
-    return word in text
+    return re.findall(r"\b" + word + r"\b", text)
 
 
 def main():
@@ -63,6 +60,7 @@ def main():
     corpora_path = str(sys.argv[3]).strip()
     temp_time = 0
     recent_time = 0
+    print("Watching input directory for changes every ten seconds.")
     while True:
         for text in os.listdir(text_path):
             if os.path.getmtime(os.path.join(text_path,text)) > recent_time:
@@ -71,8 +69,10 @@ def main():
             recent_time = os.path.getmtime(keywords)
         if recent_time > temp_time:
             temp_time = recent_time
+            print("Change detected, generating corpus...")
             voyant(keywords, text_path, corpora_path)
-        print("SLEEPING FOR A BIT")
+            print("Corpus generation complete.")
+            print("Watching for changes..."
         time.sleep(10)
 
 if __name__ == '__main__':

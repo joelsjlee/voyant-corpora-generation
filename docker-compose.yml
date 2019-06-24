@@ -11,6 +11,7 @@ services:
       dockerfile: ./compose/voyant_generator/Dockerfile
     volumes:
       - ./corpora:/corpora
+      - ./context:/input
 
   voyant:
     build:
