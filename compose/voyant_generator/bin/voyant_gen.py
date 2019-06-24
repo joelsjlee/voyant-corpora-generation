@@ -21,19 +21,20 @@ def voyant(keywords, text_path, corpora_path):
     for f in os.listdir(corpora_path):
         os.remove(os.path.join(corpora_path, f))
     csv_path = corpora_path
-    if (not text_path.endswith('/') or not corpora_path.endswith('/')):
-        raise Exception("File path must end with a /")
     keywords = make_list(keywords)
     # Matching keywords to texts and filling the directories
     filenames = os.listdir(text_path)
     for text_file in filenames:
-        with open(text_path + text_file, 'r', encoding='utf-8') as text:
+        full_text_path = os.path.join(text_path, text_file)
+        with open(full_text_path, 'r', encoding='utf-8') as text:
             text = text.read()
             for word in keywords:
                 if is_in(text, word):
-                    with zipfile.ZipFile(corpora_path + word.replace(' ', '_') + '.zip', 'a') as myzip:
-                        if word.replace(' ', '_') + '/' + text_file not in myzip.namelist():
-                            myzip.write(text_path + text_file, word.replace(' ', '_') + '/' + text_file)
+                    word = word.replace(' ', '_')
+                    with zipfile.ZipFile(os.path.join(corpora_path, word) + '.zip', 'a') as myzip:
+                        zip_path = os.path.join(word, text_file)
+                        if zip_path not in myzip.namelist():
+                            myzip.write(full_text_path, zip_path)
 
     # Making csv of all the voyant urls
     fields = ('keyword', 'url')
