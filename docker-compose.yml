@@ -1,7 +1,7 @@
 version: '3'
 
 volumes:
-  caddy: {}
+  production_traefik: {}
 
 services:
 
@@ -23,18 +23,16 @@ services:
     working_dir: /var/www/voyant
     command: java -jar VoyantServer.jar --headless=true
 
-  caddy:
+  traefik:
     build:
       context: .
-      dockerfile: ./compose/caddy/Dockerfile
-    image: voyant_caddy
+      dockerfile: ./compose/traefik/Dockerfile
+    image: voyant_traefik
     depends_on:
       - voyant
     volumes:
-      - caddy:/root/.caddy
+      - production_traefik:/etc/traefik/acme
       - ./corpora:/voyant/corpora
-    env_file:
-      - ./compose/envs/caddy
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
