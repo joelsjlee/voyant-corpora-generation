@@ -30,13 +30,18 @@ OnHostRule = true
   [backends.voyant]
     [backends.voyant.servers.server1]
       url = "http://voyant:8888"
+  [backends.nginx]
+    [backends.nginx.servers.server1]
+      url = "http://nginx"
 
 [frontends]
   [frontends.voyant]
     backend = "voyant"
-    passHostHeader = true
     [frontends.voyant.headers]
       HostsProxyHeaders = ['X-CSRFToken']
     [frontends.voyant.routes.dr1]
-      rule = "Host:jl.pennds.org"
-
+      rule = "PathPrefixStrip:/voyant"
+  [frontends.nginx]
+    backend = "nginx"
+    [frontends.nginx.routes.corpora]
+      rule = "PathPrefix:/corpora"
